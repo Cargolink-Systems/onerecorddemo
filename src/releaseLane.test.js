@@ -41,6 +41,14 @@ describe('release lane', () => {
         expect(file.stages).toBeUndefined()
     })
 
+    // cargolink-release 1.29.0: the watch-/rollback- triggers run the version the release file names, and the step
+    // refuses a file that names another one (2026-11-21: watch-cargolink-app ran an older step than its pin).
+    it('names in the release file the step version that cloudbuild.yaml pins', () => {
+        const build = readFileSync(join(__dirname, '..', 'cloudbuild.yaml'), 'utf8')
+        const [pin] = [...build.matchAll(/cargolink\/cargolink-release:(\S+?)'?$/gmu)].map((m) => m[1])
+        expect(JSON.parse(readFileSync(join(__dirname, '..', FILE), 'utf8')).step).toBe(pin)
+    })
+
     it('fires on the lane before the change (plain gcloud run deploy, no tests)', () => {
         const old = `
 steps:
