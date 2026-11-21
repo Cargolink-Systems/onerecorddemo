@@ -1,0 +1,19 @@
+{
+  "project": "air-connect-479417",
+  "region": "us-east1",
+  "service": "onerecorddemo",
+  "checks": [
+    {
+      "name": "the demo page renders (the HTTP startup probe makes the first answer real)",
+      "path": "/",
+      "expect": { "status": 200, "bodyContains": ["<title>Ne:One Play</title>"], "maxMs": 10000 }
+    },
+    {
+      "name": "the token route answers (configured is false today: the demo runs with no relay credentials)",
+      "path": "/api/token",
+      "expect": { "status": 200, "json": { "configured": { "type": "boolean" } }, "maxMs": 10000 }
+    }
+  ],
+  "stages": [{ "percent": 100, "watchMinutes": 10 }],
+  "limits": { "maxErrorRatio": 0.05, "minErrorCount": 5 }
+}

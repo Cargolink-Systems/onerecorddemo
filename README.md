@@ -73,7 +73,19 @@ NEXT_PUBLIC_DEMO_MODE=1 npm run dev
 npm test
 ```
 
+Every pull request to `main` runs them on Cloud Build (trigger `test-onerecorddemo`, `cloudbuild.test.yaml`); its check is the one required to merge. Every push to `main` runs them again before the release.
+
 ## Deploying
+
+**Production broken? Roll back first (about 50 s), then fix forward:**
+
+```bash
+gcloud builds triggers run rollback-onerecorddemo --project air-connect-479417 --region us-east1 --branch main
+```
+
+All the traffic goes to the revision tagged `stable`. Roll back only a fault that repeats.
+
+A push to `main` runs `cloudbuild.yaml` (trigger `deploy-onerecorddemo`): tests, the image, then the shared release step of cargolink-release (pinned `_RELEASE_IMAGE`). The new revision gets no traffic until the checks of `release/onerecorddemo.json` pass on its own URL; then all the traffic, and the trigger `watch-onerecorddemo` watches for 10 minutes and rolls back by itself on a fault that repeats.
 
 The root `Dockerfile` builds a standalone production image:
 
@@ -82,19 +94,13 @@ docker build --build-arg NEXT_PUBLIC_DEMO_MODE=1 -t onerecorddemo .
 docker run -p 3000:3000 onerecorddemo
 ```
 
-`cloudbuild.yaml` builds and deploys the same image to Google Cloud Run:
-
-```bash
-gcloud builds submit --config cloudbuild.yaml
-```
-
-Every push to `main` triggers this automatically (Cloud Build trigger `deploy-onerecorddemo`, project `air-connect-479417`, region `us-east1`), redeploying the `onerecorddemo` Cloud Run service linked above.
+`cloudbuild.yaml` builds and releases the same image to Google Cloud Run on every push to `main` (Cloud Build trigger `deploy-onerecorddemo`, project `air-connect-479417`, region `us-east1`), for the `onerecorddemo` Cloud Run service linked above.
 
 One-time prerequisites on a fresh GCP project, or the command above fails:
 - The Artifact Registry repository named by the `_REPO` substitution must exist: `gcloud artifacts repositories create cloud-run-source-deploy --repository-format=docker --location=<region>` (or run `gcloud run deploy --source .` once, which creates it).
 - The Cloud Build service account needs the Cloud Run Admin and Service Account User roles.
 
-To preconfigure a server on the deployed service, set the `NEONE_PLAY_*` variables from above on the Cloud Run service (`gcloud run services update <service> --update-env-vars ...`, or via secrets) — they are read at runtime, unlike `NEXT_PUBLIC_DEMO_MODE`.
+To preconfigure a server on the deployed service, set the `NEONE_PLAY_*` variables from above on the Cloud Run service through the release step (`release_step run --config=release/onerecorddemo.json --config-only -- --update-env-vars ...`, from the step's `shell-lib`; a plain `gcloud run services update` makes a revision with no traffic) — they are read at runtime, unlike `NEXT_PUBLIC_DEMO_MODE`.
 
 ## Known issues
 
