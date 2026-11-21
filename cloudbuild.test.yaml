@@ -1,0 +1,16 @@
+# The pull request check (Cloud Build, never GitHub Actions): trigger
+# `test-onerecorddemo` runs this file on every pull request to main. Its check
+# "test-onerecorddemo (air-connect-479417)" is the required status check of the
+# protected main branch. NO image, NO deploy: cloudbuild.yaml releases after the
+# merge and runs the same tests again first.
+
+timeout: 600s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - id: test
+    name: node:22
+    entrypoint: bash
+    args: ['-c', 'npm ci && npm test']
