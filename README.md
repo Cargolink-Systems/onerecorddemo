@@ -85,7 +85,7 @@ gcloud builds triggers run rollback-onerecorddemo --project air-connect-479417 -
 
 All the traffic goes to the revision tagged `stable`. Roll back only a fault that repeats.
 
-A push to `main` runs `cloudbuild.yaml` (trigger `deploy-onerecorddemo`): tests, the image, then the shared release step of cargolink-release (pinned `_RELEASE_IMAGE`). The new revision gets no traffic until the checks of `release/onerecorddemo.json` pass on its own URL; then all the traffic, and the trigger `watch-onerecorddemo` watches for 10 minutes and rolls back by itself on a fault that repeats.
+A push to `main` runs `cloudbuild.yaml` (trigger `deploy-onerecorddemo`): tests, the image, then the shared release step of cargolink-release (pinned `_RELEASE_IMAGE`). The new revision gets no traffic until the checks of `release/onerecorddemo.json` pass on its own URL; then all the traffic, and the trigger `watch-onerecorddemo` watches the request log for 5 minutes (the step default, no `stages` in the release file) and rolls back by itself on a fault that repeats.
 
 The root `Dockerfile` builds a standalone production image:
 

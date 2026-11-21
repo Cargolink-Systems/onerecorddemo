@@ -14,6 +14,5 @@
       "expect": { "status": 200, "json": { "configured": { "type": "boolean" } }, "maxMs": 10000 }
     }
   ],
-  "stages": [{ "percent": 100, "watchMinutes": 10 }],
   "limits": { "maxErrorRatio": 0.05, "minErrorCount": 5 }
 }

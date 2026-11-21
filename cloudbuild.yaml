@@ -2,7 +2,7 @@
 # (_RELEASE_IMAGE, pinned by version). The new revision gets NO traffic until the
 # checks of release/onerecorddemo.json pass on its own URL; then all the traffic,
 # the same checks on the service URL, the build ends (--no-watch), and the trigger
-# watch-onerecorddemo watches Cloud Monitoring for 10 minutes and rolls back by
+# watch-onerecorddemo watches the request log for 5 minutes (the step default) and rolls back by
 # itself on a fault that repeats. Rollback by hand (~50 s):
 #   gcloud builds triggers run rollback-onerecorddemo --project air-connect-479417 --region us-east1 --branch main
 #
@@ -27,7 +27,7 @@ substitutions:
   _SERVICE: onerecorddemo
   _REPO: cloud-run-source-deploy
   # The release step. An upgrade is this one line.
-  _RELEASE_IMAGE: 'us-east1-docker.pkg.dev/air-connect-479417/cargolink/cargolink-release:1.25.0'
+  _RELEASE_IMAGE: 'us-east1-docker.pkg.dev/air-connect-479417/cargolink/cargolink-release:1.26.0'
 
 steps:
   - id: test

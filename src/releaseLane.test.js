@@ -36,6 +36,11 @@ describe('release lane', () => {
         expect(laneProblems(readFileSync(join(__dirname, '..', 'cloudbuild.yaml'), 'utf8'))).toEqual([])
     })
 
+    it('leaves the watch to the step default (5 min on the request log): no stages of its own', () => {
+        const file = JSON.parse(readFileSync(join(__dirname, '..', FILE), 'utf8'))
+        expect(file.stages).toBeUndefined()
+    })
+
     it('fires on the lane before the change (plain gcloud run deploy, no tests)', () => {
         const old = `
 steps:
