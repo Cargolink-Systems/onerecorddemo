@@ -27,7 +27,7 @@ substitutions:
   _SERVICE: onerecorddemo
   _REPO: cloud-run-source-deploy
   # The release step. An upgrade is this one line.
-  _RELEASE_IMAGE: 'us-east1-docker.pkg.dev/air-connect-479417/cargolink/cargolink-release:1.29.0'
+  _RELEASE_IMAGE: 'us-east1-docker.pkg.dev/air-connect-479417/cargolink/cargolink-release:1.31.0'
 
 steps:
   - id: test
